@@ -1,0 +1,97 @@
+! VjetsPythia8.cmnd.
+! This file contains commands to be read in for a Pythia8 run.
+! Lines not beginning with a letter or digit are comments.
+! Names are case-insensitive  -  but spellings-sensitive!
+! The settings here are illustrative, not always physics-motivated.
+
+! 1) Settings used in the main program.
+Main:numberOfEvents = 1000         ! number of events to generate
+#Main:timesAllowErrors = 3          ! how many aborts before run stops
+Main:timesAllowErrors = 500
+6:m0 = 172.5
+23:m0 = 91.1876
+23:mWidth = 2.4952
+24:m0 = 80.399
+24:mWidth = 2.085
+StandardModel:sin2thetaW = 0.23113
+StandardModel:sin2thetaWbar = 0.23146
+ParticleDecays:limitTau0 = on
+ParticleDecays:tau0Max = 10.0
+
+! 2) Settings related to output in init(), next() and stat().
+Init:showChangedSettings = on      ! list changed settings
+Init:showChangedParticleData = off ! list changed particle data
+Next:numberCount = 100             ! print message every n events
+Next:numberShowInfo = 1            ! print event information n times
+Next:numberShowProcess = 1         ! print process record n times
+Next:numberShowEvent = 0           ! print event record n times
+
+! 3) Beam parameter settings. Values below agree with default ones.
+Beams:idA = 2212                   ! first beam, p = 2212, pbar = -2212
+Beams:idB = 2212                   ! second beam, p = 2212, pbar = -2212
+Beams:eCM = 13000.                 ! CM energy of collision
+
+! 4) Settings for the hard-process generation.
+
+! Example 1: QCD + prompt photon production; must set pTmin.
+#HardQCD:all = on                   ! switch on all QCD jet + jet processes
+#PromptPhoton:all = on              ! swich on gamma + jet and gamma + gamma
+#PhaseSpace:pTHatMin = 50.          ! minimal pT scale in process
+
+! Example 2: t-tbar production.
+#Top:gg2ttbar = on                  ! g g -> t tbar
+#Top:qqbar2ttbar = on               ! q qbar -> t tbar
+
+! Example 3: Z0 production; should set mMin.
+#WeakSingleBoson:ffbar2gmZ = on     ! q qbar -> gamma*/Z0
+#PhaseSpace:mHatMin = 50.
+WeakSingleBoson:ffbar2W = on        ! q qbar -> Wj
+
+! Example 4: gauge boson pair production; set pTmin. Not yet complete.
+#WeakDoubleBoson:ffbar2ZW = on      ! q qbar -> Z0 W+-
+#WeakDoubleBoson:ffbar2WW = on      ! q qbar -> W+ W-
+#PhaseSpace:pTHatMin = 20.          ! minimal pT scale in process
+
+! 5) Tell that also long-lived should decay.
+24:onMode   = off                 ! Switch off all W decays
+24:onIfAny  = 11 12               ! Switch on ev channel
+
+! 6) Generator-level kinematic cuts.
+
+! Invariant mass cuts on the Z
+#PhaseSpace:mHatMin = 80.
+#PhaseSpace:mHatMax = 120.
+
+! Cut on the Jet pT
+PhaseSpace:pTHatMin = 25.
+
+! 6) Switch on/off the key event generation steps.
+#PartonLevel:MPI = off              ! no multiparton interactions
+#PartonLevel:ISR = off              ! no initial-state radiation
+#PartonLevel:FSR = off              ! no final-state radiation
+#HadronLevel:Hadronize = off        ! no hadronization
+#HadronLevel:Decay = off            ! no decays
+
+! 7) Other settings. Can be expanded as desired.
+#Tune:preferLHAPDF = off            ! use internal PDFs when LHAPDF not linked
+#Tune:pp = 6                        ! use Tune 4Cx
+ParticleDecays:limitTau0 = on      ! set long-lived particle stable ...
+ParticleDecays:tau0Max = 10        ! ... if c*tau0 > 10 mm
+
+Tune:ee = 7
+Tune:pp = 14
+SpaceShower:rapidityOrder = on
+SigmaProcess:alphaSvalue = 0.140
+SpaceShower:pT0Ref = 1.56
+SpaceShower:pTmaxFudge = 0.91
+SpaceShower:pTdampFudge = 1.05
+SpaceShower:alphaSvalue = 0.127
+TimeShower:alphaSvalue = 0.127
+BeamRemnants:primordialKThard = 1.88
+MultipartonInteractions:pT0Ref = 2.09
+MultipartonInteractions:alphaSvalue = 0.126
+
+SpaceShower:rapidityOrderMPI = on
+
+PDF:pSet=LHAPDF6:NNPDF23_lo_as_0130_qed
+#BeamRemnants:reconnectRange = 1.71
