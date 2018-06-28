@@ -1,11 +1,9 @@
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
 // File: VjetsPythia8.h
-//
+// 
 // Purpose:  Header file for the Pythia8 production and analysis
 //
 //&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-//#ifndef VjetsPythia8_h
-//#define VjetsPythia8_h
 
 
 // Dependencies (#includes)
@@ -23,7 +21,7 @@
 // FastJet
 // .......
 
-  // Note: The FastJet3.h header enables automatic initialisation of fastjet::PseudoJet
+  // Note: The FastJet3.h header enables automatic initialisation of fastjet::PseudoJet 
   //       objects from Pythia8 Particle and Vec4 objects, as well as advanced features
   //       such as access to (a copy of) the original Pythia 8 Particle directly from
   //       the PseudoJet, and fastjet selectors that make use of the Particle properties.
@@ -42,7 +40,8 @@
 #include "TApplication.h"
 #include "TFile.h"           // Saving file.
 #include "TTree.h"
-#include "TLorentzVector.h"
+#include "TNtuple.h"
+#include "TLorentzVector.h" 
 
 
 // My include
@@ -50,6 +49,7 @@
 
 #include "ANA_utils.h"
 #include "TruthPart.h"
+#include "TruthJets.h"
 
 
 // C/C++ include
@@ -69,7 +69,7 @@ using namespace Pythia8;
 // class MyAnakysis
 //
 //   Note: Main analysis class definition
-//
+//  
 // -----------------------------------------------------------------------------------
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
@@ -88,77 +88,88 @@ class MyAnalysis
   // Declare functions
   // -----------------
 
-     // Note: Utility functions are defined in VjetsPythia8_utils.cc, the main generator
-     //       functions are defined in VjetsPythia_main.cc, and the analysis is defined
-     //       in VjetsPythia_ana.cc.
+     // Note: Utility functions are defined in ANA_utils.cc, while the main generator
+     //       functions and the analysis are defined in VjetsPythia.cc.
 
 
   // Initialization actions
   // ......................
-
+  
   void init();
 
-
+  
   // Analysis of each new event
   // ..........................
-
+  
   void analyze(Event& event);
 
-
+  
   // Show final results
   // ..................
-
+  
   void finish();
 
 
-  //double compute_weight(const int NB, const double x_sect, const double inst_lum);
 
-
+  
   // Declare variables and objects that span init - analyze - finish
   // ---------------------------------------------------------------
-
+  
 private:
 
+  
   // Global variables
   // ................
-
+  
   int nEvt;
   int nEventAccept;
   int vetoCount[4];
 
   bool firstEvent;
 
+  bool debug;
 
   // Lepton and jet level
   // ....................
 
   string level;
 
+  
   // Declare Objects and Vectors of Objects
   // --------------------------------------
 
-  std::vector<TLorentzVector> Lepton_Born;
-  std::vector<TLorentzVector>* p_Lepton_Born;
+  std::vector<TruthPart> Top_Coll;
+  std::vector<TruthPart>* p_Top_Coll;
 
-  std::vector<TruthPart> Electron_Born;
-  std::vector<TruthPart>* p_Electron_Born;
+  std::vector<TruthPart> Vecboson_Coll;
+  std::vector<TruthPart>* p_Vecboson_Coll;
 
+  std::vector<TruthPart> LeptonBare_Coll;
+  std::vector<TruthPart>* p_LeptonBare_Coll;
 
+  std::vector<TruthPart> Neutrino_Coll;
+  std::vector<TruthPart>* p_Neutrino_Coll;
 
+  std::vector<TruthJets> TruthJetsColl;
+  std::vector<TruthJets>* p_TruthJetsColl;
+
+  
   // Histograms
   // ..........
+
   TH1* lepton_px;
 
 
 
   // Others
   // ......
-
-  double dSigmaBin[5];
-  //TFile *lepton_file;
-  TTree *lepton_tree;
-  Double_t px, py, pz, pt;
-  TLorentzVector v;
+  
+  TNtuple *lepton_ntuple;
+  TTree *myTree = new TTree("T","ev1 Tree");
 
 
 };
+
+
+
+
