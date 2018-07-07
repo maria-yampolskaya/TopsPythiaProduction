@@ -49,11 +49,11 @@ void MyAnalysis::init()
      // Note: These must be define in VjetsPythia8.h to be in-scope for all functions
 
   
-     // Debug flag
-     // ..........
+     // Different flags
+     // ...............
 
   debug = false;
-
+  
   
      // Number of events
      // ................
@@ -87,8 +87,9 @@ void MyAnalysis::init()
 //*************************************************************************************
 // Analysis Code
 //*************************************************************************************
-void MyAnalysis::analyze(Event& event)
+void MyAnalysis::analyze(Event& event, Event& partonevent)
 {
+
 
   // Declare an Analysis Utilities class object
   // ------------------------------------------
@@ -111,7 +112,8 @@ void MyAnalysis::analyze(Event& event)
   p_Vecboson_Coll = &Vecboson_Coll;   
   p_LeptonBare_Coll = &LeptonBare_Coll;
   p_Neutrino_Coll = &Neutrino_Coll;
-  p_TruthJetsColl = &TruthJetsColl;   
+  p_TruthJets_Coll = &TruthJets_Coll;   
+  p_PartonJets_Coll = &PartonJets_Coll;   
 
 
      // Get Tops
@@ -143,13 +145,20 @@ void MyAnalysis::analyze(Event& event)
      // True Jets
      // .........
 
-        // Note: A list of stable particles not to be clustered in jets must first be defined
+        // Note 1: A list of stable particles not to be clustered in jets must first be defined for truth jets.
+
+        // Note 2: A different function is called for final state particle jets and for pre-hadronization parton jets
+  
 
   std::vector<int> skippart;
   for (int i_part = 0; i_part < LeptonBare_Coll.size(); i_part++) skippart.push_back((LeptonBare_Coll[i_part]).Index());
 
-  myUtils.TrueJetsReco(event, skippart, p_TruthJetsColl);
+     // Particle jets
+  myUtils.TrueJetsReco(event, skippart, p_TruthJets_Coll);
 
+  
+     // Parton jets
+  myUtils.PartonJetsReco(event, partonevent, p_PartonJets_Coll);
 
 
   // Fill ntuples and histograms
@@ -169,7 +178,8 @@ void MyAnalysis::analyze(Event& event)
   Vecboson_Coll.clear();         
   LeptonBare_Coll.clear();           
   Neutrino_Coll.clear();           
-  TruthJetsColl.clear();
+  TruthJets_Coll.clear();
+  PartonJets_Coll.clear();
   skippart.clear();
  
 
@@ -283,8 +293,8 @@ int main(int argc, char* argv[])
 
   
 
-  // Prepare input file
-  // ------------------
+  // Prepare output file
+  // -------------------
 
   TFile *myfile = TFile::Open("outfile.root","recreate");
 
@@ -306,10 +316,25 @@ int main(int argc, char* argv[])
   int nEvent = pythia.mode("Main:numberOfEvents");
 
 
+  // Some global variables
+  // ---------------------
+
+  int nListEvts = 2;
+
+
   // Declare Event Variables
   // -----------------------
 
+    // An event record for parton level particles
+    // ..........................................
+  
+        // Note: Partons will be taken at the end of the parton evolution
+        //       i.e. just before the hadronization.
 
+    Event partonLevelEvent;
+    partonLevelEvent.init("Parton Level event record", &pythia.particleData);
+
+    
 
 //=========================================================================== 
 // Loop to Generate Events
@@ -324,10 +349,38 @@ int main(int argc, char* argv[])
       if (!pythia.next()) continue;
 
   
+  // Get the parton-level event
+  // --------------------------
+
+        // Declare an Analysis Utilities class object
+  // ------------------------------------------
+
+      // Note: To be able to access the functions define there
+
+  ANA_utils myUtilsMain;
+
+
+
+  myUtilsMain.getPartonLevelEvent(pythia.event, partonLevelEvent);
+
+
+   // Display some event info
+   // -----------------------
+
+      // List first few events
+      // .....................
+
+      if (iEvent < nListEvts)
+	{
+	  pythia.event.list();
+	  partonLevelEvent.list();
+	}
+      
+
    // User Analysis of current event
    // ------------------------------
 
-      myAnalysis.analyze(pythia.event);
+      myAnalysis.analyze(pythia.event, partonLevelEvent);
 
 
      

@@ -82,6 +82,8 @@ public :
 
   double compute_weight(const int NB, const double x_sect, const double inst_lum);
 
+  void getPartonLevelEvent( Pythia8::Event& event, Event& partonLevelEvent);
+    
 
      // Fill truth particle and truth jet information
      // .............................................
@@ -99,6 +101,12 @@ public :
   void Bare_WelectronTruePart(Pythia8::Event event, std::vector<TruthPart>* p_BornElec_Coll);
 
   void TrueJetsReco(Pythia8::Event event, std::vector<int> partskipped, std::vector<TruthJets>* p_TruthJets_Coll);
+
+  void PartonJetsReco(Pythia8::Event event, Pythia8::Event partonevent, std::vector<TruthJets>* p_PartonJets_Coll);
+
+  void Get_BottomQuarks(Pythia8::Event event, std::vector<TruthPart>* p_BQuarks_Coll);
+
+  void Get_BottomHadrons(Pythia8::Event event, std::vector<TruthPart> BQuark_Coll, std::vector<TruthPart>* p_BHadrons_Coll);
 
 
 };

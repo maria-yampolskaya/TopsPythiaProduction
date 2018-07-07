@@ -101,7 +101,7 @@ class MyAnalysis
   // Analysis of each new event
   // ..........................
   
-  void analyze(Event& event);
+  void analyze(Event& event, Event& partonevent);
 
   
   // Show final results
@@ -124,7 +124,7 @@ private:
   int nEvt;
   int nEventAccept;
   int vetoCount[4];
-
+  
   bool firstEvent;
 
   bool debug;
@@ -150,8 +150,11 @@ private:
   std::vector<TruthPart> Neutrino_Coll;
   std::vector<TruthPart>* p_Neutrino_Coll;
 
-  std::vector<TruthJets> TruthJetsColl;
-  std::vector<TruthJets>* p_TruthJetsColl;
+  std::vector<TruthJets> TruthJets_Coll;
+  std::vector<TruthJets>* p_TruthJets_Coll;
+
+  std::vector<TruthJets> PartonJets_Coll;
+  std::vector<TruthJets>* p_PartonJets_Coll;
 
   
   // Histograms

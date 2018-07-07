@@ -19,7 +19,9 @@ class TruthJets
   float _eta;
   float _rap;
   float _phi;
-  bool _btag;
+  bool  _bqtag;
+  bool  _bhtag;
+  int   _npart;
 
 
  public :
@@ -33,7 +35,9 @@ class TruthJets
   void Set_Eta( const float & V_Eta)                   {_eta=V_Eta;};
   void Set_Rap( const float & V_Rap)                   {_rap=V_Rap;};
   void Set_Phi( const float & V_Phi)                   {_phi=V_Phi;};
-  void Set_Btag( const bool & V_Btag)                  {_btag=V_Btag;};
+  void Set_BQTag( const bool & V_BQtag)                {_bqtag=V_BQtag;};
+  void Set_BHTag( const bool & V_BHtag)                {_bhtag=V_BHtag;};
+  void Set_Npart( const int & V_Npart)                 {_npart=V_Npart;};
  
 
   float E() const           {return _E;};
@@ -45,7 +49,9 @@ class TruthJets
   float Eta() const         {return _eta;};
   float Rap() const         {return _rap;};
   float Phi() const         {return _phi;};
-  bool Btag() const         {return _btag ;};
+  bool BQTag() const        {return _bqtag;};
+  bool BHTag() const        {return _bhtag;};
+  int Npart() const         {return _npart;};
 
 
   TruthJets(const float &E=0,
@@ -57,7 +63,9 @@ class TruthJets
 	    const float &Eta=0,
 	    const float &Rap=0,
 	    const float &Phi=0,
-	    const bool &Btag =0
+	    const bool &BQtag=0,
+	    const bool &BHtag=0,
+	    const int &Npart=0
      )
   {  
     Set(E,
@@ -69,7 +77,9 @@ class TruthJets
 	Eta,
 	Rap,
 	Phi,
-        Btag); 
+        BQtag, 
+        BHtag, 
+        Npart); 
   }
   
   
@@ -82,7 +92,9 @@ class TruthJets
 	   const float &Eta,
 	   const float &Rap,
 	   const float &Phi,
-           const bool &Btag
+           const bool &BQtag,
+           const bool &BHtag,
+           const int &Npart
 	   )
   { _E=E;
     _px=Px;
@@ -93,7 +105,9 @@ class TruthJets
     _eta=Eta;
     _rap=Rap;
     _phi=Phi;
-    _btag=Btag;
+    _bqtag=BQtag;
+    _bhtag=BHtag;
+    _npart=Npart;
   }	
 };
 
