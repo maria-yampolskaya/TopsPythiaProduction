@@ -82,6 +82,7 @@ void MyAnalysis::init()
   tree->Branch("neutrino_eta",&neutrino_eta);
   tree->Branch("neutrino_phi",&neutrino_phi);
   tree->Branch("neutrino_E",&neutrino_E);
+  tree->Branch("neutrino_PdgId",&neutrino_PdgId);
 
   tree->Branch("muon_pt",&muon_pt);
   tree->Branch("muon_eta",&muon_eta);
@@ -105,11 +106,13 @@ void MyAnalysis::init()
   tree->Branch("lightjet_eta",&lightjet_eta);
   tree->Branch("lightjet_phi",&lightjet_phi);
   tree->Branch("lightjet_E",&lightjet_E);
+  tree->Branch("lightjet_nPart",&lightjet_nPart);
 
   tree->Branch("bjet_pt",&bjet_pt);
   tree->Branch("bjet_eta",&bjet_eta);
   tree->Branch("bjet_phi",&bjet_phi);
   tree->Branch("bjet_E",&bjet_E);
+  tree->Branch("bjet_nPart",&bjet_nPart);
 
   tree->Branch("lightpartonjet_pt",&lightpartonjet_pt);
   tree->Branch("lightpartonjet_eta",&lightpartonjet_eta);
@@ -121,11 +124,6 @@ void MyAnalysis::init()
   tree->Branch("bpartonjet_phi",&bpartonjet_phi);
   tree->Branch("bpartonjet_E",&bpartonjet_E);
 
-  tree->Branch("bquark_pt",&bquark_pt);
-  tree->Branch("bquark_eta",&bquark_eta);
-  tree->Branch("bquark_phi",&bquark_phi);
-  tree->Branch("bquark_E",&bquark_E);
-
   tree->Branch("nTop",&nTop);
   tree->Branch("nNeutrino",&nNeutrino);
   tree->Branch("nMuon",&nMuon);
@@ -135,8 +133,8 @@ void MyAnalysis::init()
   tree->Branch("nLightpartonjet",&nLightpartonjet);
   tree->Branch("nBpartonjet",&nBpartonjet);
   tree->Branch("nBoson",&nBoson);
-  tree->Branch("mEt",&mEt);
-  tree->Branch("mEt_phi",&mEt_phi);
+  tree->Branch("Met",&Met);
+  tree->Branch("Met_phi",&Met_phi);
 
 }
 
@@ -177,11 +175,13 @@ void MyAnalysis::analyze(Event& event, Event& partonevent)
   p_TruthJets_Coll = &TruthJets_Coll;
   p_PartonJets_Coll = &PartonJets_Coll;
 
+  
   // Get Tops
   // ........
 
   myUtils.Get_Tops(event, p_Top_Coll);
 
+  
   // Get Vector bosons
   // .................
 
@@ -220,175 +220,231 @@ void MyAnalysis::analyze(Event& event, Event& partonevent)
   // Parton jets
   myUtils.PartonJetsReco(event, partonevent, p_PartonJets_Coll);
 
+  
+
   // Fill ntuples and histograms
   // ---------------------------
 
-  nBoson = p_Vecboson_Coll->size();
-  if (nBoson != 0) {
-    for (size_t i = 0; i < p_Vecboson_Coll->size(); i++){
-      boson_pt.push_back((Vecboson_Coll[i]).Pt());
-      boson_eta.push_back((Vecboson_Coll[i]).Eta());
-      boson_phi.push_back((Vecboson_Coll[i]).Phi());
-      boson_E.push_back((Vecboson_Coll[i]).E());
-      boson_ID.push_back((Vecboson_Coll[i]).Pdgid());
-    }
-  }
-  else if (nBoson == 0) {
-    boson_pt.push_back(0);
-    boson_eta.push_back(0);
-    boson_phi.push_back(0);
-    boson_E.push_back(0);
-    boson_ID.push_back(0);
-  }
+     // W and Z
+     // .......
 
+  nBoson = p_Vecboson_Coll->size();
+  if (nBoson != 0)
+    {
+      for (size_t i = 0; i < p_Vecboson_Coll->size(); i++)
+	{
+	  boson_pt.push_back((Vecboson_Coll[i]).Pt());
+	  boson_eta.push_back((Vecboson_Coll[i]).Eta());
+	  boson_phi.push_back((Vecboson_Coll[i]).Phi());
+	  boson_E.push_back((Vecboson_Coll[i]).E());
+	  boson_ID.push_back((Vecboson_Coll[i]).Pdgid());
+	}
+    }
+  else if (nBoson == 0)
+    {
+      boson_pt.push_back(0);
+      boson_eta.push_back(0);
+      boson_phi.push_back(0);
+      boson_E.push_back(0);
+      boson_ID.push_back(0);
+    }
+
+  
+     // light and b-jets for particle and parton jets
+     // .............................................
+
+        // Note: For b-jets, we use the b-quark tag for parton jets, and the b-hadron tag for particle jets.
+  
   nLightjet = 0;
   nBjet = 0;
-  if (p_TruthJets_Coll->size() != 0) {
-    for (size_t i = 0; i < p_TruthJets_Coll->size(); i++){
-      if ((TruthJets_Coll[i]).BHTag()) {
-        bjet_pt.push_back((TruthJets_Coll[i]).Pt());
-        bjet_eta.push_back((TruthJets_Coll[i]).Eta());
-        bjet_phi.push_back((TruthJets_Coll[i]).Phi());
-        bjet_E.push_back((TruthJets_Coll[i]).E());
-        nBjet += 1;
-      }
-      else {
-        lightjet_pt.push_back((TruthJets_Coll[i]).Pt());
-        lightjet_eta.push_back((TruthJets_Coll[i]).Eta());
-        lightjet_phi.push_back((TruthJets_Coll[i]).Phi());
-        lightjet_E.push_back((TruthJets_Coll[i]).E());
-        nLightjet += 1;
-      }
+  if (p_TruthJets_Coll->size() != 0)
+    {
+      for (size_t i = 0; i < p_TruthJets_Coll->size(); i++)
+	{
+	  if ((TruthJets_Coll[i]).BHTag())
+	    {
+	      bjet_pt.push_back((TruthJets_Coll[i]).Pt());
+	      bjet_eta.push_back((TruthJets_Coll[i]).Eta());
+	      bjet_phi.push_back((TruthJets_Coll[i]).Phi());
+	      bjet_E.push_back((TruthJets_Coll[i]).E());
+	      bjet_nPart.push_back((TruthJets_Coll[i]).Npart());
+	      nBjet += 1;
+	    }
+	  else
+	    {
+	      lightjet_pt.push_back((TruthJets_Coll[i]).Pt());
+	      lightjet_eta.push_back((TruthJets_Coll[i]).Eta());
+	      lightjet_phi.push_back((TruthJets_Coll[i]).Phi());
+	      lightjet_E.push_back((TruthJets_Coll[i]).E());
+	      lightjet_nPart.push_back((TruthJets_Coll[i]).Npart());
+	      nLightjet += 1;
+	    }
+	}
     }
-  }
-  if (nLightjet == 0) {
-    lightjet_pt.push_back(0);
-    lightjet_eta.push_back(0);
-    lightjet_phi.push_back(0);
-    lightjet_E.push_back(0);
-  }
-  if (nBjet == 0) {
-    bjet_pt.push_back(0);
-    bjet_eta.push_back(0);
-    bjet_phi.push_back(0);
-    bjet_E.push_back(0);
-  }
+  if (nLightjet == 0)
+    {
+      lightjet_pt.push_back(0);
+      lightjet_eta.push_back(0);
+      lightjet_phi.push_back(0);
+      lightjet_E.push_back(0);
+      lightjet_nPart.push_back(0);
+    }
+  if (nBjet == 0)
+    {
+      bjet_pt.push_back(0);
+      bjet_eta.push_back(0);
+      bjet_phi.push_back(0);
+      bjet_E.push_back(0);
+      bjet_nPart.push_back(0);
+    }
 
   nLightpartonjet = 0;
   nBpartonjet = 0;
-  if (p_PartonJets_Coll->size() != 0) {
-    for (size_t i = 0; i < p_PartonJets_Coll->size(); i++){
-      if ((PartonJets_Coll[i]).BQTag()) {
-        bpartonjet_pt.push_back((PartonJets_Coll[i]).Pt());
-        bpartonjet_eta.push_back((PartonJets_Coll[i]).Eta());
-        bpartonjet_phi.push_back((PartonJets_Coll[i]).Phi());
-        bpartonjet_E.push_back((PartonJets_Coll[i]).E());
-        nBpartonjet += 1;
-      }
-      else {
-        lightpartonjet_pt.push_back((PartonJets_Coll[i]).Pt());
-        lightpartonjet_eta.push_back((PartonJets_Coll[i]).Eta());
-        lightpartonjet_phi.push_back((PartonJets_Coll[i]).Phi());
-        lightpartonjet_E.push_back((PartonJets_Coll[i]).E());
-        nLightpartonjet += 1;
-      }
+  if (p_PartonJets_Coll->size() != 0)
+    {
+      for (size_t i = 0; i < p_PartonJets_Coll->size(); i++)
+	{
+	  if ((PartonJets_Coll[i]).BQTag())
+	    {
+	      bpartonjet_pt.push_back((PartonJets_Coll[i]).Pt());
+	      bpartonjet_eta.push_back((PartonJets_Coll[i]).Eta());
+	      bpartonjet_phi.push_back((PartonJets_Coll[i]).Phi());
+	      bpartonjet_E.push_back((PartonJets_Coll[i]).E());
+	      nBpartonjet += 1;
+	    }
+	  else
+	    {
+	      lightpartonjet_pt.push_back((PartonJets_Coll[i]).Pt());
+	      lightpartonjet_eta.push_back((PartonJets_Coll[i]).Eta());
+	      lightpartonjet_phi.push_back((PartonJets_Coll[i]).Phi());
+	      lightpartonjet_E.push_back((PartonJets_Coll[i]).E());
+	      nLightpartonjet += 1;
+	    }
+	}
     }
-  }
-  if (nLightpartonjet == 0) {
-    lightpartonjet_pt.push_back(0);
-    lightpartonjet_eta.push_back(0);
-    lightpartonjet_phi.push_back(0);
-    lightpartonjet_E.push_back(0);
-  }
-  if (nBpartonjet == 0) {
-    bpartonjet_pt.push_back(0);
-    bpartonjet_eta.push_back(0);
-    bpartonjet_phi.push_back(0);
-    bpartonjet_E.push_back(0);
-  }
+  if (nLightpartonjet == 0)
+    {
+      lightpartonjet_pt.push_back(0);
+      lightpartonjet_eta.push_back(0);
+      lightpartonjet_phi.push_back(0);
+      lightpartonjet_E.push_back(0);
+    }
+  if (nBpartonjet == 0)
+    {
+      bpartonjet_pt.push_back(0);
+      bpartonjet_eta.push_back(0);
+      bpartonjet_phi.push_back(0);
+      bpartonjet_E.push_back(0);
+    }
+  
+
+     // Electrons and muons
+     // ...................
 
   nElectron = 0;
   nMuon = 0;
-  if (p_LeptonBare_Coll->size() != 0) {
-    for (size_t i = 0; i < p_LeptonBare_Coll->size(); i++){
-      if ((LeptonBare_Coll[i]).Pdgid() == 11 || (LeptonBare_Coll[i]).Pdgid() == -11) {
-        electron_pt.push_back((LeptonBare_Coll[i]).Pt());
-        electron_eta.push_back((LeptonBare_Coll[i]).Eta());
-        electron_phi.push_back((LeptonBare_Coll[i]).Phi());
-        electron_E.push_back((LeptonBare_Coll[i]).E());
-        electron_charge.push_back((LeptonBare_Coll[i]).Charge());
-        nElectron += 1;
-      }
-      if ((LeptonBare_Coll[i]).Pdgid() == 13 || (LeptonBare_Coll[i]).Pdgid() == -13) {
-        muon_pt.push_back((LeptonBare_Coll[i]).Pt());
-        muon_eta.push_back((LeptonBare_Coll[i]).Eta());
-        muon_phi.push_back((LeptonBare_Coll[i]).Phi());
-        muon_E.push_back((LeptonBare_Coll[i]).E());
-        muon_charge.push_back((LeptonBare_Coll[i]).Charge());
-        nMuon += 1;
-      }
+  if (p_LeptonBare_Coll->size() != 0)
+    {
+      for (size_t i = 0; i < p_LeptonBare_Coll->size(); i++)
+	{
+	  if ((LeptonBare_Coll[i]).Pdgid() == 11 || (LeptonBare_Coll[i]).Pdgid() == -11)
+	    {
+	      electron_pt.push_back((LeptonBare_Coll[i]).Pt());
+	      electron_eta.push_back((LeptonBare_Coll[i]).Eta());
+	      electron_phi.push_back((LeptonBare_Coll[i]).Phi());
+	      electron_E.push_back((LeptonBare_Coll[i]).E());
+	      electron_charge.push_back((LeptonBare_Coll[i]).Charge());
+	      nElectron += 1;
+	    }
+	  if ((LeptonBare_Coll[i]).Pdgid() == 13 || (LeptonBare_Coll[i]).Pdgid() == -13)
+	    {
+	      muon_pt.push_back((LeptonBare_Coll[i]).Pt());
+	      muon_eta.push_back((LeptonBare_Coll[i]).Eta());
+	      muon_phi.push_back((LeptonBare_Coll[i]).Phi());
+	      muon_E.push_back((LeptonBare_Coll[i]).E());
+	      muon_charge.push_back((LeptonBare_Coll[i]).Charge());
+	      nMuon += 1;
+	    }
+	}
     }
-  }
-  if (nElectron == 0) {
-    electron_pt.push_back(0);
-    electron_eta.push_back(0);
-    electron_phi.push_back(0);
-    electron_E.push_back(0);
-    electron_charge.push_back(0);
-  }
-  if (nMuon == 0) {
-    muon_pt.push_back(0);
-    muon_eta.push_back(0);
-    muon_phi.push_back(0);
-    muon_E.push_back(0);
-    muon_charge.push_back(0);
-  }
+  if (nElectron == 0)
+    {
+      electron_pt.push_back(0);
+      electron_eta.push_back(0);
+      electron_phi.push_back(0);
+      electron_E.push_back(0);
+      electron_charge.push_back(0);
+    }
+  if (nMuon == 0)
+    {
+      muon_pt.push_back(0);
+      muon_eta.push_back(0);
+      muon_phi.push_back(0);
+      muon_E.push_back(0);
+      muon_charge.push_back(0);
+    }
 
+
+     // Top quarks
+     // ..........
 
   nTop = p_Top_Coll->size();
-  if (nTop != 0) {
-    for (size_t i = 0; i < p_Top_Coll->size(); i++){
-      top_pt.push_back((Top_Coll[i]).Pt());
-      top_eta.push_back((Top_Coll[i]).Eta());
-      top_phi.push_back((Top_Coll[i]).Phi());
-      top_E.push_back((Top_Coll[i]).E());
+  if (nTop != 0)
+    {
+      for (size_t i = 0; i < p_Top_Coll->size(); i++)
+	{
+	  top_pt.push_back((Top_Coll[i]).Pt());
+	  top_eta.push_back((Top_Coll[i]).Eta());
+	  top_phi.push_back((Top_Coll[i]).Phi());
+	  top_E.push_back((Top_Coll[i]).E());
+	}
     }
-  }
-  else if (nTop == 0) {
-    top_pt.push_back(0);
-    top_eta.push_back(0);
-    top_phi.push_back(0);
-    top_E.push_back(0);
-  }
+  else if (nTop == 0)
+    {
+      top_pt.push_back(0);
+      top_eta.push_back(0);
+      top_phi.push_back(0);
+      top_E.push_back(0);
+    }
+
+
+     // Neutrinos and Met
+     // .................
 
   nNeutrino = p_Neutrino_Coll->size();
-  if (nNeutrino != 0) {
-    for (size_t i = 0; i < p_Neutrino_Coll->size(); i++){
-      neutrino_pt.push_back((Neutrino_Coll[i]).Pt());
-      neutrino_eta.push_back((Neutrino_Coll[i]).Eta());
-      neutrino_phi.push_back((Neutrino_Coll[i]).Phi());
-      neutrino_E.push_back((Neutrino_Coll[i]).E());
+  if (nNeutrino != 0)
+    {
+    for (size_t i = 0; i < p_Neutrino_Coll->size(); i++)
+      {
+	neutrino_pt.push_back((Neutrino_Coll[i]).Pt());
+	neutrino_eta.push_back((Neutrino_Coll[i]).Eta());
+	neutrino_phi.push_back((Neutrino_Coll[i]).Phi());
+	neutrino_E.push_back((Neutrino_Coll[i]).E());
+	neutrino_PdgId.push_back((Neutrino_Coll[i]).Pdgid());
+      }
     }
-  }
-  else if (nNeutrino == 0) {
-    neutrino_pt.push_back(0);
-    neutrino_eta.push_back(0);
-    neutrino_phi.push_back(0);
-    neutrino_E.push_back(0);
-  }
+  else if (nNeutrino == 0)
+    {
+      neutrino_pt.push_back(0);
+      neutrino_eta.push_back(0);
+      neutrino_phi.push_back(0);
+      neutrino_E.push_back(0);
+      neutrino_PdgId.push_back(0);
+    }
 
   float sqsum;
-  float sum_y;
-  float sum_x;
+  float sum_y=0;
+  float sum_x=0;
 
-  for (auto i : Neutrino_Coll) {
-    sqsum += pow(i.Px(), 2.0) + pow(i.Py(), 2.0);
-    sum_y += i.Py();
-    sum_x += i.Px();
-  }
+  for (auto i : Neutrino_Coll)
+    {
+      sum_y += i.Py();
+      sum_x += i.Px();
+    }
 
-  mEt = sqrt(sqsum);
-  mEt_phi = atan(sum_y/sum_x);
+  sqsum = pow(sum_x, 2.0) + pow(sum_y, 2.0);
+  Met = sqrt(sqsum);
+  Met_phi = atan(sum_y/sum_x);
 
   tree->Fill();
 
@@ -406,6 +462,7 @@ void MyAnalysis::analyze(Event& event, Event& partonevent)
   neutrino_eta.clear();
   neutrino_phi.clear();
   neutrino_E.clear();
+  neutrino_PdgId.clear();
 
   muon_pt.clear();
   muon_eta.clear();
@@ -423,11 +480,13 @@ void MyAnalysis::analyze(Event& event, Event& partonevent)
   bjet_eta.clear();
   bjet_phi.clear();
   bjet_E.clear();
+  bjet_nPart.clear();
 
   lightjet_pt.clear();
   lightjet_eta.clear();
   lightjet_phi.clear();
   lightjet_E.clear();
+  lightjet_nPart.clear();
 
   bpartonjet_pt.clear();
   bpartonjet_eta.clear();
@@ -438,11 +497,6 @@ void MyAnalysis::analyze(Event& event, Event& partonevent)
   lightpartonjet_eta.clear();
   lightpartonjet_phi.clear();
   lightpartonjet_E.clear();
-
-  bquark_pt.clear();
-  bquark_eta.clear();
-  bquark_phi.clear();
-  bquark_E.clear();
 
   boson_pt.clear();
   boson_eta.clear();
@@ -634,7 +688,7 @@ int main(int argc, char* argv[])
     // ------------------------------------------
 
     // Note: To be able to access the functions define there
-
+    
     ANA_utils myUtilsMain;
 
 
@@ -674,12 +728,6 @@ int main(int argc, char* argv[])
   // -------------------------
 
   pythia.stat();
-
-
-  // Write root output
-  // -----------------
-
-  //T->Write();
 
 
   // User finishing

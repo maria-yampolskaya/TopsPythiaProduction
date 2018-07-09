@@ -15,8 +15,6 @@ Main:timesAllowErrors = 500
 24:mWidth = 2.085
 StandardModel:sin2thetaW = 0.23113
 StandardModel:sin2thetaWbar = 0.23146
-ParticleDecays:limitTau0 = on
-ParticleDecays:tau0Max = 10.0
 
 ! 2) Settings related to output in init(), next() and stat().
 Init:showChangedSettings = on      ! list changed settings
@@ -39,13 +37,13 @@ Beams:eCM = 13000.                 ! CM energy of collision
 #PhaseSpace:pTHatMin = 50.          ! minimal pT scale in process
 
 ! Example 2: t-tbar production.
-#Top:gg2ttbar = on                  ! g g -> t tbar
+Top:gg2ttbar = on                  ! g g -> t tbar
 #Top:qqbar2ttbar = on               ! q qbar -> t tbar
 
 ! Example 3: Z0 production; should set mMin.
 #WeakSingleBoson:ffbar2gmZ = on     ! q qbar -> gamma*/Z0
 #PhaseSpace:mHatMin = 50.
-WeakSingleBoson:ffbar2W = on        ! q qbar -> Wj
+#WeakSingleBoson:ffbar2W = on        ! q qbar -> Wj
 
 ! Example 4: gauge boson pair production; set pTmin. Not yet complete.
 #WeakDoubleBoson:ffbar2ZW = on      ! q qbar -> Z0 W+-

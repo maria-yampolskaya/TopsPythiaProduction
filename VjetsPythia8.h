@@ -127,8 +127,8 @@ private:
   int vetoCount[4];
 
   bool firstEvent;
-
   bool debug;
+  
 
   // Lepton and jet level
   // ....................
@@ -162,12 +162,23 @@ private:
   // ..........
 
 
-  // Others
-  // ......
+  // TTree variables
+  // ...............
+
+      // Note: For cases with more than one particle of the same kind, produce a vector for each branch
+
   
   TTree *tree = new TTree("ParticleTree","Particle Data");
 
-  // Vectors for each branch
+  int nTop, nNeutrino, nMuon, nElectron, nLightjet, nBjet, nBoson, nLightpartonjet, nBpartonjet;
+  
+  float Met, Met_phi;
+
+  std::vector<int> neutrino_PdgId;
+  std::vector<int> lightjet_nPart;
+  std::vector<int> bjet_nPart;
+  std::vector<int> boson_ID;
+
   std::vector<float> top_pt, top_eta, top_phi, top_E;
   std::vector<float> neutrino_pt, neutrino_eta, neutrino_phi, neutrino_E;
   std::vector<float> muon_pt, muon_eta, muon_phi, muon_E, muon_charge;
@@ -176,10 +187,9 @@ private:
   std::vector<float> bjet_pt, bjet_eta, bjet_phi, bjet_E;
   std::vector<float> lightpartonjet_pt, lightpartonjet_eta, lightpartonjet_phi, lightpartonjet_E;
   std::vector<float> bpartonjet_pt, bpartonjet_eta, bpartonjet_phi, bpartonjet_E;
-  std::vector<float> bquark_pt, bquark_eta, bquark_phi, bquark_E;
-  std::vector<float> boson_pt, boson_eta, boson_phi, boson_E,  boson_ID;
-  float nTop, nNeutrino, nMuon, nElectron, nLightjet, nBjet, nBoson, nLightpartonjet, nBpartonjet, nBquark, mEt, mEt_phi;
+  std::vector<float> boson_pt, boson_eta, boson_phi, boson_E;
 
+  
 };
 
 
