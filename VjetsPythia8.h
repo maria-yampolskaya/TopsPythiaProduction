@@ -58,6 +58,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <cmath>
 
 using namespace Pythia8;
 
@@ -66,7 +67,7 @@ using namespace Pythia8;
 
 // $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 // -----------------------------------------------------------------------------------
-// class MyAnakysis
+// class MyAnalysis
 //
 //   Note: Main analysis class definition
 //  
@@ -124,7 +125,7 @@ private:
   int nEvt;
   int nEventAccept;
   int vetoCount[4];
-  
+
   bool firstEvent;
 
   bool debug;
@@ -160,16 +161,24 @@ private:
   // Histograms
   // ..........
 
-  TH1* lepton_px;
-
-
 
   // Others
   // ......
   
-  TNtuple *lepton_ntuple;
-  TTree *myTree = new TTree("T","ev1 Tree");
+  TTree *tree = new TTree("ParticleTree","Particle Data");
 
+  // Vectors for each branch
+  std::vector<float> top_pt, top_eta, top_phi, top_E;
+  std::vector<float> neutrino_pt, neutrino_eta, neutrino_phi, neutrino_E;
+  std::vector<float> muon_pt, muon_eta, muon_phi, muon_E, muon_charge;
+  std::vector<float> electron_pt, electron_eta, electron_phi, electron_E, electron_charge;
+  std::vector<float> lightjet_pt, lightjet_eta, lightjet_phi, lightjet_E;
+  std::vector<float> bjet_pt, bjet_eta, bjet_phi, bjet_E;
+  std::vector<float> lightpartonjet_pt, lightpartonjet_eta, lightpartonjet_phi, lightpartonjet_E;
+  std::vector<float> bpartonjet_pt, bpartonjet_eta, bpartonjet_phi, bpartonjet_E;
+  std::vector<float> bquark_pt, bquark_eta, bquark_phi, bquark_E;
+  std::vector<float> boson_pt, boson_eta, boson_phi, boson_E,  boson_ID;
+  float nTop, nNeutrino, nMuon, nElectron, nLightjet, nBjet, nBoson, nLightpartonjet, nBpartonjet, nBquark, mEt, mEt_phi;
 
 };
 
