@@ -245,7 +245,7 @@ void MyAnalysis::analyze(Event& event, Event& partonevent)
   nBjet = 0;
   if (p_TruthJets_Coll->size() != 0) {
     for (size_t i = 0; i < p_TruthJets_Coll->size(); i++){
-      if ((TruthJets_Coll[i]).BQTag() || (TruthJets_Coll[i]).BHTag()) {
+      if ((TruthJets_Coll[i]).BHTag()) {
         bjet_pt.push_back((TruthJets_Coll[i]).Pt());
         bjet_eta.push_back((TruthJets_Coll[i]).Eta());
         bjet_phi.push_back((TruthJets_Coll[i]).Phi());
@@ -278,7 +278,7 @@ void MyAnalysis::analyze(Event& event, Event& partonevent)
   nBpartonjet = 0;
   if (p_PartonJets_Coll->size() != 0) {
     for (size_t i = 0; i < p_PartonJets_Coll->size(); i++){
-      if ((PartonJets_Coll[i]).BQTag() || (PartonJets_Coll[i]).BHTag()) {
+      if ((PartonJets_Coll[i]).BQTag()) {
         bpartonjet_pt.push_back((PartonJets_Coll[i]).Pt());
         bpartonjet_eta.push_back((PartonJets_Coll[i]).Eta());
         bpartonjet_phi.push_back((PartonJets_Coll[i]).Phi());
@@ -634,7 +634,7 @@ int main(int argc, char* argv[])
     // ------------------------------------------
 
     // Note: To be able to access the functions define there
-    
+
     ANA_utils myUtilsMain;
 
 
